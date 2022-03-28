@@ -54,7 +54,7 @@ export default (props) => {
               label="Price"
             >
               <Descriptions>
-                <Descriptions.Item>{String(_.floor(_.get(detailInfo, 'price'), 2))}</Descriptions.Item>
+                <Descriptions.Item>{String(_.floor(_.get(detailInfo, 'price'), 2))+'GBP'}</Descriptions.Item>
               </Descriptions>
             </Form.Item>
           </Col>
