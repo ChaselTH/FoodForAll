@@ -50,8 +50,6 @@ const columnsConfig = (payloads) => {
       dataIndex: 'title',
       key: 'title',
       render: text => <a key={'title'}>{text}</a>,
-      fixed: 'left',
-      width: 135,
     },
     {
       title: 'Introduction',
@@ -162,7 +160,6 @@ const columnsConfig = (payloads) => {
           </Button>
         </Space>
       ),
-      fixed: 'right'
     },
   ];
 }
@@ -280,7 +277,6 @@ export default () => {
         columns={columnsConfig(payloads)}
         rowKey={record => record.pid}
         dataSource={_.get(projectInfo, 'projectInfo', [])}
-        scroll={{ x: 1360 }}
       />
       <Drawer
         className='ffa-home'
