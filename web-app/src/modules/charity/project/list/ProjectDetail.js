@@ -12,13 +12,14 @@ export default (props) => {
   const currentNum = _.get(detailInfo, 'current_num');
   const totalNum = _.get(detailInfo, 'total_num');
   const percent = _.floor((currentNum / totalNum) * 100, 0);
+  console.log()
   return (
     <div>
       <Form layout="vertical" hideRequiredMark>
         <Row gutter={16}>
           <Col span={24}>
             <Form.Item
-              label="Name"
+              label="Title"
             >
               <Descriptions>
                 <Descriptions.Item>{_.get(detailInfo, 'title')}</Descriptions.Item>
@@ -54,7 +55,7 @@ export default (props) => {
               label="Price"
             >
               <Descriptions>
-                <Descriptions.Item>{String(_.floor(_.get(detailInfo, 'price'), 2))}</Descriptions.Item>
+                <Descriptions.Item>{String(_.floor(_.get(detailInfo, 'price'), 2)) + 'GBP'}</Descriptions.Item>
               </Descriptions>
             </Form.Item>
           </Col>
