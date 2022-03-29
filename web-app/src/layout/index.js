@@ -2,7 +2,8 @@ import React, { useEffect, useMemo } from 'react';
 import { Layout as AntdLayout } from 'antd';
 import { useLocation } from 'react-router-dom';
 import _ from 'lodash';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import classNames from "classnames";
 
 import layoutConfig from 'src/configure/layout';
 import actions from "src/actions";
@@ -18,11 +19,12 @@ const Layout = (props) => {
 
   const dispatch = useDispatch();
   const location = useLocation();
+  const userInfo = useSelector(state => state.user.userInfo);
 
   const { pathname } = location;
 
-  const sidebarHidingStatus = useMemo(() => _.some(
-    layoutConfig.hideSidebar,
+  const sidebarShowingStatus = useMemo(() => _.some(
+    layoutConfig.showSidebar,
     item => item.test(pathname)
   ), [pathname]);
 
@@ -30,17 +32,28 @@ const Layout = (props) => {
     dispatch(actions.getUserInfo()).catch(err => console.error(err));
   }, [dispatch]);
 
+  const initStatus = useMemo(() => {
+    return !_.isNil(_.get(userInfo, 'isLoggedIn'));
+  }, [userInfo]);
 
   return (
-    <AntdLayout className="ffa-frame">
-      <Header />
-      <AntdLayout>
-        {!sidebarHidingStatus && <Sidebar/>}
-        <AntdLayout className="frame-content">
-          <Main/>
-        </AntdLayout>
-      </AntdLayout>
-    </AntdLayout>
+    <div className="ffa-frame">
+      {
+        initStatus
+          ? <>
+            <Header />
+            <AntdLayout className={
+              classNames({
+                'frame-content-with-sidebar': sidebarShowingStatus,
+              })
+            }>
+              {sidebarShowingStatus && <Sidebar />}
+              <Main />
+            </AntdLayout>
+          </>
+          : <div></div>
+      }
+    </div>
   );
 };
 

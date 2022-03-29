@@ -1,8 +1,9 @@
-import json
-from django.http import HttpResponse, HttpResponseBadRequest
 from .common import *
+from Common.decorators import *
 
-@api_logger(logger=logger_standard)
+@api_logger_decorator()
+@check_server_error_decorator()
+@check_request_method_decorator(method=["GET"])
 def get_region_list(request):
     """
     @api {GET} /region_list/ region list
@@ -11,34 +12,50 @@ def get_region_list(request):
     @apiGroup Common
     @apiDescription api to get country or region list
 
-    @apiSuccess (Success 200 return) {List(String)} region_list Region list.
+    @apiSuccess (Success 200 return) {Int} status Status code ([0] success)
+    @apiSuccess (Success 200 return) {List(Dict)} region_list Region list. Its sub-parameters are shown below.
+    @apiSuccess (Success 200 return) {String} region (Sub-parameter of region_list) Region full name.
+    @apiSuccess (Success 200 return) {String} code (Sub-parameter of region_list) Region code.
 
     @apiSuccessExample {Json} Response-Success
     {
+        "status": 0,
         "region_list": [
-            "Afghanistan",
-            "Albania",
-            "Algeria",
-            "Andorra",
-            "Angola",
-            "Anguilla",
-            "Antigua and Barbuda",
-            "Arab Emirates",
-            "Argentina",
-            "Armenia",
-            "Aruba",
-            "Australia",
-            "Austria",
+            {
+                "region": "Afghanistan",
+                "code": "AF"
+            },
+            {
+                "region": "Albania",
+                "code": "AL"
+            },
+            {
+                "region": "Algeria",
+                "code": "DZ"
+            },
+            {
+                "region": "Andorra",
+                "code": "AD"
+            },
+            {
+                "region": "Angola",
+                "code": "AO"
+            },
+            {
+                "region": "Anguilla",
+                "code": "AI"
+            },
             ...
         ]
     }
     """
-    if request.method != "GET":
-        return HttpResponseBadRequest()
-    response_data = {"region_list": sorted(list(REGION2RID.keys()))}
+    region_list = [{"region": i, "code": j} for i, j in sorted(list(REGION2RID.items()), key=lambda x: x[0])]
+    response_data = {"status": STATUS_CODE["success"], "region_list": region_list}
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
-@api_logger(logger=logger_standard)
+@api_logger_decorator()
+@check_server_error_decorator()
+@check_request_method_decorator(method=["GET"])
 def get_currency_list(request):
     """
     @api {GET} /currency_list/ currency list
@@ -47,34 +64,46 @@ def get_currency_list(request):
     @apiGroup Common
     @apiDescription api to get currency type list
 
-    @apiSuccess (Success 200 return) {List(String)} currency_list Currency type list.
+    @apiSuccess (Success 200 return) {Int} status Status code ([0] success)
+    @apiSuccess (Success 200 return) {List(Dict)} currency_list Currency type list. Its sub-parameters are shown below.
+    @apiSuccess (Success 200 return) {String} currency_type (Sub-parameter of currency_list) Currency type full name.
+    @apiSuccess (Success 200 return) {String} code (Sub-parameter of currency_list) Currency type code.
 
     @apiSuccessExample {Json} Response-Success
     {
+        "status": 0,
         "currency_list": [
-            "AED (Emirati Dirham)",
-            "AFN (Afghan Afghani)",
-            "ALL (Albanian Lek)",
-            "AMD (Armenian Dram)",
-            "ANG (Dutch Guilder)",
-            "AOA (Angolan Kwanza)",
-            "ARS (Argentine Peso)",
-            "AUD (Australian Dollar)",
-            "AWG (Aruban or Dutch Guilder)",
-            "AZN (Azerbaijan Manat)",
-            "BAM (Bosnian Convertible Mark)",
-            "BBD (Barbadian or Bajan Dollar)",
-            "BDT (Bangladeshi Taka)",
+            {
+                "currency_type": "Afghan Afghani",
+                "code": "AFN"
+            },
+            {
+                "currency_type": "Albanian Lek",
+                "code": "ALL"
+            },
+            {
+                "currency_type": "Algerian Dinar",
+                "code": "DZD"
+            },
+            {
+                "currency_type": "Angolan Kwanza",
+                "code": "AOA"
+            },
+            {
+                "currency_type": "Argentine Peso",
+                "code": "ARS"
+            },
             ...
         ]
     }
     """
-    if request.method != "GET":
-        return HttpResponseBadRequest()
-    response_data = {"currency_list": sorted(list(CURRENCY2CID.keys()))}
+    currency_list = [{"currency_type": i, "code": j} for i, j in sorted(list(CURRENCY2CID.items()), key=lambda x: x[0])]
+    response_data = {"status": STATUS_CODE["success"], "currency_list": currency_list}
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
-@api_logger(logger=logger_standard)
+@api_logger_decorator()
+@check_server_error_decorator()
+@check_request_method_decorator(method=["GET"])
 def get_region2currency(request):
     """
     @api {GET} /region2currency/ region to currency
@@ -83,25 +112,25 @@ def get_region2currency(request):
     @apiGroup Common
     @apiDescription api to get dict region: default currency type
 
-    @apiSuccess (Success 200 return) {Dict} region2currency Matching regions and their default currency type with format{string: string}, i.e.{region: default_currency_type}.
+    @apiSuccess (Success 200 return) {Int} status Status code ([0] success)
+    @apiSuccess (Success 200 return) {Dict} region2currency Matching regions' codes and their default currency types with format{string: string}, i.e.{region_code: default_currency_type_code}.
 
     @apiSuccessExample {Json} Response-Success
     {
+        "status": 0,
         "region2currency": {
-            "Arab Emirates": "AED (Emirati Dirham)",
-            "Afghanistan": "AFN (Afghan Afghani)",
-            "Albania": "ALL (Albanian Lek)",
-            "Armenia": "AMD (Armenian Dram)",
-            "Netherlands Antilles": "ANG (Dutch Guilder)",
-            "Curacao": "ANG (Dutch Guilder)",
-            "Angola": "AOA (Angolan Kwanza)",
-            "Argentina": "ARS (Argentine Peso)",
-            "Australia": "AUD (Australian Dollar)",
+            "AE": "AED",
+            "AF": "AFN",
+            "AL": "ALL",
+            "AM": "AMD",
+            "AN": "ANG",
+            "CW": "ANG",
+            "AO": "AOA",
+            "AR": "ARS",
+            "AU": "AUD",
             ...
         }
     }
     """
-    if request.method != "GET":
-        return HttpResponseBadRequest()
-    response_data = {"region2currency": REGION2CURRENCY}
+    response_data = {"status": STATUS_CODE["success"], "region2currency": RID2CID}
     return HttpResponse(json.dumps(response_data), content_type="application/json")

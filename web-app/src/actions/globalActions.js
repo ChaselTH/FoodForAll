@@ -7,13 +7,16 @@ import api from "../api";
 import apiConfig from "../api/apiConfig";
 import { SET_REGION_LIST, SET_CURRENCY_LIST } from "../constants/actionTypes";
 
+import { reformatOptions, reformatToMap } from 'src/utils/utils'
+
 export const getRegionList = (params) => async (dispatch) => {
   try {
-    const { region_list: regionList } = await api.get(apiConfig.regionList, params);
-    console.log('--regionList--\n', regionList);
+    let { region_list: regionList } = await api.get(apiConfig.regionList, params);
+    const regionMap = reformatToMap(regionList, 'code', 'region');
+    regionList = reformatOptions(regionList, 'region', 'code');
     dispatch({
       type: SET_REGION_LIST,
-      payload: { regionList },
+      payload: { regionList, regionMap },
     });
     return regionList;
   } catch (e) {
@@ -21,6 +24,7 @@ export const getRegionList = (params) => async (dispatch) => {
       type: SET_REGION_LIST,
       payload: {
         regionList: [],
+        regionMap: {},
       },
     });
   }
@@ -28,7 +32,8 @@ export const getRegionList = (params) => async (dispatch) => {
 
 export const getCurrencyList = (params) => async (dispatch) => {
   try {
-    const { currency_list: currencyList } = await api.get(apiConfig.currencyList, params);
+    let { currency_list: currencyList } = await api.get(apiConfig.currencyList, params);
+    currencyList = reformatOptions(currencyList, 'currency_type', 'code');
     console.log('--currencyList--\n', currencyList);
     dispatch({
       type: SET_CURRENCY_LIST,
