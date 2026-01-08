@@ -85,6 +85,83 @@ npm start
 
 **At this point, the server is successfully started and the main project page can be accessed by opening http://localhost:3000/**
 
+## Docker 快速启动（推荐用于服务器部署）
+
+### 需要的软件
+
+- Docker
+- Docker Compose (v2)
+
+### 启动步骤
+
+在项目根目录执行：
+
+```shell
+docker compose up --build
+```
+
+服务启动完成后：
+
+- 前端：http://localhost:3000
+- 后端：http://localhost:8000
+
+### 关闭服务
+
+```shell
+docker compose down
+```
+
+## Linux 服务器部署 Docker
+
+以下以 Ubuntu 为例：
+
+1. 安装 Docker 与 Compose：
+
+```shell
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg lsb-release
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+2. 启动 Docker 并设置开机自启：
+
+```shell
+sudo systemctl enable --now docker
+```
+
+3. 将当前用户加入 docker 组（避免每次使用 sudo）：
+
+```shell
+sudo usermod -aG docker $USER
+newgrp docker
+```
+
+4. 在服务器上部署项目：
+
+```shell
+git clone <your-repo-url>
+cd FoodForAll
+docker compose up --build -d
+```
+
+5. 打开服务器防火墙端口（如使用 ufw）：
+
+```shell
+sudo ufw allow 3000
+sudo ufw allow 8000
+```
+
+完成后可通过服务器 IP 访问：
+
+- http://<server-ip>:3000
+- http://<server-ip>:8000
+
 ## Backend Api Doc
 
 After starting the backend server, you can access the API documentation via http://localhost:8000/static/apidoc/index.html 
