@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: foodforall
+      MYSQL_USER: apex
+      MYSQL_PASSWORD: apex08
+      MYSQL_ROOT_PASSWORD: apex08root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  backend:
+    build:
+      context: ./server-app
+    command: >-
+      sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    environment:
+      DJANGO_DEBUG: "True"
+      DJANGO_ALLOWED_HOSTS: "*"
+      DB_HOST: db
+      DB_NAME: foodforall
+      DB_USER: apex
+      DB_PASSWORD: apex08
+      DB_PORT: "3306"
+    volumes:
+      - ./server-app:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./web-app
+    environment:
+      HOST: 0.0.0.0
+    volumes:
+      - ./web-app:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
