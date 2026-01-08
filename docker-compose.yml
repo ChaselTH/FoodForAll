@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: foodforall
+      MYSQL_USER: foodforall
+      MYSQL_PASSWORD: bSh58z3fMT8rNPBf
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    build:
+      context: .
+      dockerfile: server-app/Dockerfile
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: foodforall
+      DB_USER: foodforall
+      DB_PASSWORD: bSh58z3fMT8rNPBf
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0"
+      DJANGO_CORS_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000,http://localhost,http://127.0.0.1"
+      DJANGO_DEBUG: "False"
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: web-app/Dockerfile
+      args:
+        REACT_APP_API_BASE_URL: http://localhost:8000/
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  mysql_data:

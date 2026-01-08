@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-e3$s&q1uqps%61usf(-a^++wajh8!w(_%(zp6ea9r*=1!jl^mo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() == "true"
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0").split(",")
 
 # Application definition
 
@@ -90,11 +90,11 @@ WSGI_APPLICATION = 'FoodForAll.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'foodforall',
-        'USER': 'apex',
-        'PASSWORD': 'apex08',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'NAME': os.getenv('DB_NAME', 'foodforall'),
+        'USER': os.getenv('DB_USER', 'apex'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'apex08'),
+        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+        'PORT': os.getenv('DB_PORT', '3306'),
     }
 }
 
@@ -159,7 +159,10 @@ EMAIL_HOST_USER = 'team08.apex@gmail.com'
 EMAIL_HOST_PASSWORD = 'foodforall'
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = ["http://localhost:3000", "http://127.0.0.1:3000"]
+CORS_ORIGIN_WHITELIST = os.getenv(
+    "DJANGO_CORS_ORIGINS",
+    "http://localhost:3000,http://127.0.0.1:3000,http://localhost,http://127.0.0.1",
+).split(",")
 #CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_METHODS = [
      "DELETE",
