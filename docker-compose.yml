@@ -16,8 +16,7 @@ services:
 
   backend:
     build:
-      context: .
-      dockerfile: server-app/Dockerfile
+      context: server-app
     restart: unless-stopped
     environment:
       DB_HOST: db
@@ -35,8 +34,7 @@ services:
 
   frontend:
     build:
-      context: .
-      dockerfile: web-app/Dockerfile
+      context: web-app
       args:
         REACT_APP_API_BASE_URL: http://localhost:8000/
     restart: unless-stopped
