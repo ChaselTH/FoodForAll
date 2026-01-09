@@ -5,7 +5,7 @@ services:
     image: mysql:8.0
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: 7329185ebc6250a3
       MYSQL_DATABASE: foodforall
       MYSQL_USER: foodforall
       MYSQL_PASSWORD: bSh58z3fMT8rNPBf
